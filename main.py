@@ -64,7 +64,7 @@ class Soldier(pygame.sprite.Sprite):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
 player = Soldier("player", 200, 200, 0.3, 5)
-player2 = Soldier("player", 500, 200, 0.3, 5)
+player2 = Soldier("player2", 500, 200, 0.3, 5)
 
 clock = pygame.time.Clock()
 FPS = 60
