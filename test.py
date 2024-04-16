@@ -9,16 +9,24 @@ WIDTH, HEIGHT = 1000, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Power Quest")
 
+clock = pygame.time.Clock()
+FPS = 60
+
 # Load images
 BG_IMAGE = pygame.image.load("img/bg.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
 start_img = pygame.image.load("img/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/quit_image.png").convert_alpha()
-
-clock = pygame.time.Clock()
-FPS = 60
+# Collectibles
+coins_img = pygame.image.load("img/icons/coin.png").convert_alpha()
+trophy_img = pygame.image.load("img/icons/trophy.png").convert_alpha()
+collectibles = {
+    "Coin"      : coins_img,
+    "Trophy"    : trophy_img
+}
 
 # Variables
 GRAVITY = 0.65
+TILE_SIZE = 16
 
 start_game = False
 # Player action variables
@@ -36,7 +44,7 @@ quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
 
 # Character class
 class Soldier(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed):
+    def __init__(self, char_type, x, y, scale, speed, keys):
         pygame.sprite.Sprite.__init__(self)
         self.char_type = char_type
         self.speed = speed
@@ -44,36 +52,35 @@ class Soldier(pygame.sprite.Sprite):
         self.vel_y = 0
         self.jump = False
         self.flip = False
+        self.keys = keys
         img = pygame.image.load(f"img/{self.char_type}/0.jpg")
         self.image = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
-    def move(self, moving_left, moving_right):
+    def move(self):
         # Reset movement variables
         dx = 0
         dy = 0
         
-        # Assing movement variables if moving left or right
-        if moving_left:
+        # Assing movement variables if moving left or right or jumping
+        keys = pygame.key.get_pressed()
+        if keys[self.keys[0]]:
             dx = -self.speed
             self.flip = True
             self.direction = -1
-        if moving_right:
+        if keys[self.keys[1]]:
             dx = self.speed
             self.flip = False
             self.direction = 1
-        
-        # Jump
-        if self.jump == True and self.rect.bottom == 500:
+        if keys[self.keys[2]] and self.rect.bottom == 500:
             self.vel_y = -11
             self.jump = False
 
         # Apply gravity
         self.vel_y += GRAVITY
         if self.vel_y > 10:
-            self.vel_y
-        
+            self.vel_y = 10
         dy += self.vel_y
 
         # Check collision with floor
@@ -87,8 +94,25 @@ class Soldier(pygame.sprite.Sprite):
     def draw(self):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-player1 = Soldier("player", 200, 200, 0.3, 5)
-player2 = Soldier("player2", 500, 200, 0.3, 5)
+player1 = Soldier("player", 200, 200, 0.3, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Soldier("player2", 500, 200, 0.3, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+
+class Collectible(pygame.sprite.Sprite):
+    def __init__(self, item_type, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.item_type = item_type
+        self.image = collectibles[self.item_type]
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+
+# Create sprite groups
+collectible_group = pygame.sprite.Group()
+
+collectible = Collectible("Coin", 100, 300)
+collectible_group.add(collectible)
+collectible = Collectible("Trophy", 400, 300)
+collectible_group.add(collectible)
+
 
 run = True
 while run:
@@ -104,11 +128,13 @@ while run:
     else:        
         draw_bg()
 
+        collectible_group.draw(WIN)
+
         player2.draw()
         player1.draw()
 
-        player1.move(moving_left, moving_right)
-        player2.move(moving_left, moving_right)
+        player1.move()
+        player2.move()
 
     # Event handler
     for event in pygame.event.get():
@@ -116,14 +142,14 @@ while run:
             run = False
         # Keyboard presses
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                moving_left = True
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                moving_right = True
-            if event.key == pygame.K_w: # Lägg till "and player1.alive" 23:00
-                player1.jump = True
-            if event.key == pygame.K_UP:
-                player2.jump = True
+            # if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+            #     moving_left = True
+            # if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+            #     moving_right = True
+            # if event.key == pygame.K_w: # Lägg till "and player1.alive" 23:00
+            #     player1.jump = True
+            # if event.key == pygame.K_UP:
+            #     player2.jump = True
             if event.key == pygame.K_ESCAPE:
                 start_game = False
 
