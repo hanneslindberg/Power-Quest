@@ -64,7 +64,7 @@ class Char(pygame.sprite.Sprite):
         
         # Assing movement variables if moving left or right or jumping
         if self.char_type == "enemy":
-            keys = [self.keys, self.keys, self.keys]
+            keys = self.keys
             if keys[0]:
                 dx = -self.speed
                 self.flip = True
@@ -103,14 +103,14 @@ class Char(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
-    # def ai(self):
-    #     # Add "alive" check
-    #     if self.direction == 1:
-    #         ai_moving_right = True
-    #     else:
-    #         ai_moving_right = False
-    #     ai_moving_left = not ai_moving_right 
-    #     self.move(ai_moving_left, ai_moving_right)
+    def ai(self):
+        # Add "alive" check
+        if self.direction == 1:
+            ai_moving_right = True
+        else:
+            ai_moving_right = False
+        ai_moving_left = not ai_moving_right 
+        self.move(ai_moving_left, ai_moving_right)
 
     def draw(self):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
@@ -158,8 +158,8 @@ while run:
         player2.move()
         player2.draw()
 
-        enemy.draw()
         enemy.move()
+        enemy.draw()
 
     # Event handler
     for event in pygame.event.get():
