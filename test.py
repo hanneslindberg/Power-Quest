@@ -152,14 +152,14 @@ while run:
 
         collectible_group.draw(WIN)
 
-        player1.move()
         player1.draw()
+        player1.move()
         
-        player2.move()
         player2.draw()
-
-        enemy.move()
+        player2.move()
+        # Enemy
         enemy.draw()
+        enemy.move()
 
     # Event handler
     for event in pygame.event.get():
