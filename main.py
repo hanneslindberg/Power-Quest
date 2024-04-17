@@ -11,8 +11,8 @@ pygame.display.set_caption("Power Quest")
 
 # Load images
 BG_IMAGE = pygame.image.load("img/bg.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
-start_img = pygame.image.load("img/start_image.png").convert_alpha()
-quit_img = pygame.image.load("img/quit_image.png").convert_alpha()
+start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
+quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
 
 clock = pygame.time.Clock()
 FPS = 60
@@ -44,7 +44,7 @@ class Soldier(pygame.sprite.Sprite):
         self.vel_y = 0
         self.jump = False
         self.flip = False
-        img = pygame.image.load(f"img/{self.char_type}/0.jpg")
+        img = pygame.image.load(f"img/{self.char_type}/0.png")
         self.image = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -87,7 +87,7 @@ class Soldier(pygame.sprite.Sprite):
     def draw(self):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-player1 = Soldier("player", 200, 200, 0.3, 5)
+player1 = Soldier("player1", 200, 200, 0.3, 5)
 player2 = Soldier("player2", 500, 200, 0.3, 5)
 
 run = True

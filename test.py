@@ -1,5 +1,6 @@
 import pygame
 import button
+import random
 
 pygame.init()
 
@@ -56,24 +57,27 @@ class Char(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        # AI specific variavles
+        self.move_counter = 0
+        self.idling = False
+        self.idling_counter = 0
 
-    def move(self):
+    def move(self, moving_left, moving_right):
         # Reset movement variables
         dx = 0
         dy = 0
-        
+
         # Assing movement variables if moving left or right or jumping
         if self.char_type == "enemy":
-            keys = self.keys
-            if keys[0]:
+            if moving_left:
                 dx = -self.speed
                 self.flip = True
                 self.direction = -1
-            if keys[1]:
+            if moving_right:
                 dx = self.speed
                 self.flip = False
                 self.direction = 1
-            if keys[0] == False and keys[1] == False:
+            if moving_left == False and moving_right == False:
                 dx = 0
         else:
             keys = pygame.key.get_pressed()
@@ -86,7 +90,7 @@ class Char(pygame.sprite.Sprite):
                 self.flip = False
                 self.direction = 1
             if keys[self.keys[2]] and self.rect.bottom == 500:
-                self.vel_y = -11
+                self.vel_y = -15
                 self.jump = False
 
         # Apply gravity
@@ -105,19 +109,30 @@ class Char(pygame.sprite.Sprite):
 
     def ai(self):
         # Add "alive" check
-        if self.direction == 1:
-            ai_moving_right = True
+        if self.idling == False and random.randint(1, 200) == 1:
+            self.idling = True
+            self.idling_counter = 50
+        
+        if self.idling == False:
+            if self.direction == 1:
+                ai_moving_right = True
+            else:
+                ai_moving_right = False
+
+            ai_moving_left = not ai_moving_right 
+            self.move(ai_moving_left, ai_moving_right)
+            self.move_counter += 0.5
+
+            if self.move_counter > TILE_SIZE * 3:
+                self.direction *= -1
+                self.move_counter *= -1
         else:
-            ai_moving_right = False
-        ai_moving_left = not ai_moving_right 
-        self.move(ai_moving_left, ai_moving_right)
+            self.idling_counter -= 1
+            if self.idling_counter <= 0:
+                self.idling = False
 
     def draw(self):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
-
-player1 = Char("player1", 200, 200, 0.3, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 500, 200, 0.3, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
-enemy = Char("enemy", 650, 200, 0.3, 2, [moving_left, moving_right, jump])
 
 class Collectible(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y):
@@ -128,7 +143,15 @@ class Collectible(pygame.sprite.Sprite):
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
 # Create sprite groups
+enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
+
+player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Char("player2", 500, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+enemy = Char("enemy", 650, 200, 0.2, 0.8, [moving_left, moving_right, jump])
+enemy2 = Char("enemy", 850, 200, 0.2, 0.8, [moving_left, moving_right, jump])
+enemy_group.add(enemy)
+enemy_group.add(enemy2)
 
 collectible = Collectible("Coin", 100, 300)
 collectible_group.add(collectible)
@@ -152,14 +175,17 @@ while run:
 
         collectible_group.draw(WIN)
 
+        # Player 1
         player1.draw()
-        player1.move()
-        
+        player1.move(False, False)
+        # Player 2
         player2.draw()
-        player2.move()
+        player2.move(False, False)
         # Enemy
-        enemy.draw()
-        enemy.move()
+        for enemy in enemy_group:
+            enemy.ai()
+            enemy.draw()
+            enemy.move(False, False)
 
     # Event handler
     for event in pygame.event.get():
@@ -167,23 +193,15 @@ while run:
             run = False
         # Keyboard presses
         if event.type == pygame.KEYDOWN:
-            # if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-            #     moving_left = True
-            # if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-            #     moving_right = True
-            # if event.key == pygame.K_w: # Lägg till "and player1.alive" 23:00
-            #     player1.jump = True
-            # if event.key == pygame.K_UP:
-            #     player2.jump = True
             if event.key == pygame.K_ESCAPE:
                 start_game = False
 
         # Keyboard button released
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                moving_left = False
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                moving_right = False
+        # if event.type == pygame.KEYUP:  --------------------------------------------------behövs inte än för vi ändrade sättet som man rör sig med två olika inputs
+        #     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+        #         moving_left = False
+        #     if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+        #         moving_right = False
     
     pygame.display.flip()
 
