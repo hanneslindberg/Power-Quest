@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 # Create window
-BG = (164, 244, 250)
+BG = (32, 32, 36)
 WIDTH, HEIGHT = 1000, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Power Quest")
@@ -14,7 +14,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Load images
-BG_IMAGE = pygame.image.load("img/bg.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
+BG_IMAGE = pygame.image.load("img/room1.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
 start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
 # Collectibles
@@ -42,6 +42,12 @@ def draw_bg():
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
 
+# Sprite function
+def load_sprite_sheets(dir1, dir2, width, height, direction=False):
+    path = join("assets", dir1, dir2)
+    images = [f for f in listdir(path) if isfile(join(path, f))]
+
+
 # Character class
 class Char(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed, keys):
@@ -53,9 +59,11 @@ class Char(pygame.sprite.Sprite):
         self.jump = False
         self.flip = False
         self.keys = keys
-        img = pygame.image.load(f"img/{self.char_type}/0.png")
+        img = pygame.image.load(f"img/{self.char_type}/Idle/0.png")
         self.image = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
         self.rect = self.image.get_rect()
+        # self.char_mask = char_mask
+        # self.char_mask = pygame.mask.from_surfce(self.image)
         self.rect.center = (x, y)
         # AI specific variavles
         self.move_counter = 0
@@ -90,7 +98,7 @@ class Char(pygame.sprite.Sprite):
                 self.flip = False
                 self.direction = 1
             if keys[self.keys[2]] and self.rect.bottom == 500:
-                self.vel_y = -15
+                self.vel_y = -13.5
                 self.jump = False
 
         # Apply gravity
@@ -99,14 +107,14 @@ class Char(pygame.sprite.Sprite):
             self.vel_y = 10
         dy += self.vel_y
 
-        # Check collision with floor
+        # Check for colision
         if self.rect.bottom + dy > 500:
             dy = 500 - self.rect.bottom
 
         # Update rectangle position
         self.rect.x += dx
         self.rect.y += dy
-
+ 
     def ai(self):
         # Add "alive" check
         if self.idling == False and random.randint(1, 200) == 1:
@@ -120,7 +128,7 @@ class Char(pygame.sprite.Sprite):
                 ai_moving_right = False
 
             ai_moving_left = not ai_moving_right 
-            self.move(ai_moving_left, ai_moving_right)
+            self.move(ai_moving_left, ai_moving_right) # ------------------------------- sätt på när AI ska röra sig!!!
             self.move_counter += 0.5
 
             if self.move_counter > TILE_SIZE * 3:
@@ -133,6 +141,29 @@ class Char(pygame.sprite.Sprite):
 
     def draw(self):
         WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
+
+
+# Collision code testing
+class Object(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, name=None):
+        super().__init__()
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        self.width = width
+        self.height = height
+        self.name = name
+
+    def draw(self, win):
+        win.blit(self.image, (self.rect.x, self.rect.y))
+
+class Block(Object):
+    def __init__(self, x, y, size):
+        super().__init__(x, y, size, size)
+        block = load_block(size)
+        self.image.blit(block, (0, 0))
+        self.mask = pygame.mask.from_surface(self.image)
+
+
 
 class Collectible(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y):
@@ -147,15 +178,15 @@ enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
 player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 500, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
-enemy = Char("enemy", 650, 200, 0.2, 0.8, [moving_left, moving_right, jump])
-enemy2 = Char("enemy", 850, 200, 0.2, 0.8, [moving_left, moving_right, jump])
+player2 = Char("player2", 300, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+enemy = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump])
+enemy2 = Char("enemy", 500, 300, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy_group.add(enemy)
 enemy_group.add(enemy2)
 
-collectible = Collectible("Coin", 100, 300)
+collectible = Collectible("Coin", 200, 200)
 collectible_group.add(collectible)
-collectible = Collectible("Trophy", 400, 300)
+collectible = Collectible("Trophy", 400, 200)
 collectible_group.add(collectible)
 
 
@@ -171,6 +202,7 @@ while run:
         if quit_button.draw(WIN):
             run = False
     else:        
+        WIN.fill(BG)
         draw_bg()
 
         collectible_group.draw(WIN)
@@ -195,13 +227,6 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 start_game = False
-
-        # Keyboard button released
-        # if event.type == pygame.KEYUP:  --------------------------------------------------behövs inte än för vi ändrade sättet som man rör sig med två olika inputs
-        #     if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-        #         moving_left = False
-        #     if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-        #         moving_right = False
     
     pygame.display.flip()
 
