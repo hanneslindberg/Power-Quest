@@ -122,7 +122,7 @@ class Char(pygame.sprite.Sprite):
                 ai_moving_right = False
 
             ai_moving_left = not ai_moving_right 
-            #self.move(ai_moving_left, ai_moving_right) ------------------------------- sätt på när AI ska röra sig!!!
+            self.move(ai_moving_left, ai_moving_right) # ------------------------------- sätt på när AI ska röra sig!!!
             self.move_counter += 0.5
 
             if self.move_counter > TILE_SIZE * 3:
