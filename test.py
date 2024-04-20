@@ -184,7 +184,11 @@ class World():
         small_corner_top_left = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_topL.png')
         small_corner_right_TnB_R = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_grass_T&B-R.png')
         small_corner_bottom_left = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_downL.png')
+        grass_top_img = pygame.image.load('img/tilesheets/Mossy Tileset/grass_top.png')
 
+        
+        # Create image array for tiles
+        tile_images = ['dirt_img', 'wall_img', 'left_down_corner_img', 'left_top_corner_img', 'right_down_corner_img']
 
         row_count = 0
         for row in data:
@@ -260,6 +264,13 @@ class World():
                     img_rect.y = row_count * TILE_SIZE
                     tile = (img, img_rect)
                     self.tile_list.append(tile)
+                if tile == 11: 
+                    img = pygame.transform.scale(grass_top_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
                 col_count += 1 
             row_count += 1
 
@@ -284,7 +295,7 @@ world_data = [
 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
-[3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 7, 7, 7, 7, 7],
+[3, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 7, 7, 7, 7, 7],
 ]
 
 world = World(world_data)
