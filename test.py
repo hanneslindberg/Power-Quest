@@ -2,8 +2,6 @@ import pygame
 import button
 import random
 
-pygame.init()
-
 # Create window
 BG = (32, 32, 36)
 WIDTH, HEIGHT = 1000, 600
@@ -27,7 +25,7 @@ collectibles = {
 
 # Variables
 GRAVITY = 0.65  
-TILE_SIZE = 16
+TILE_SIZE = 40
 
 start_game = False
 # Player action variables
@@ -41,12 +39,6 @@ def draw_bg():
 
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
-
-# Sprite function
-def load_sprite_sheets(dir1, dir2, width, height, direction=False):
-    path = join("assets", dir1, dir2)
-    images = [f for f in listdir(path) if isfile(join(path, f))]
-
 
 # Character class
 class Char(pygame.sprite.Sprite):
@@ -144,27 +136,9 @@ class Char(pygame.sprite.Sprite):
 
 
 # Collision code testing
-class Object(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, name=None):
-        super().__init__()
-        self.rect = pygame.Rect(x, y, width, height)
-        self.image = pygame.Surface((width, height), pygame.SRCALPHA)
-        self.width = width
-        self.height = height
-        self.name = name
-
-    def draw(self, win):
-        win.blit(self.image, (self.rect.x, self.rect.y))
-
-class Block(Object):
-    def __init__(self, x, y, size):
-        super().__init__(x, y, size, size)
-        block = load_block(size)
-        self.image.blit(block, (0, 0))
-        self.mask = pygame.mask.from_surface(self.image)
 
 
-
+# collectibles 
 class Collectible(pygame.sprite.Sprite):
     def __init__(self, item_type, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -189,6 +163,131 @@ collectible_group.add(collectible)
 collectible = Collectible("Trophy", 400, 200)
 collectible_group.add(collectible)
 
+# Grid layout
+def draw_grid():
+    for line in range(0,5):
+        pygame.draw.line(WIN, (255, 255, 255), (0, line * TILE_SIZE), (WIDTH, line * TILE_SIZE))
+        pygame.draw.line(WIN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, HEIGHT))
+
+class World():
+    def __init__(self, data):
+        self.tile_list = []
+
+        #load image
+        dirt_img = pygame.image.load('img/tilesheets/Mossy Tileset/tile1.png')
+        wall_img = pygame.image.load('img/tilesheets/Mossy Tileset/tile_wall_grass.png')
+        left_down_corner_img = pygame.image.load('img/tilesheets/Mossy Tileset/corner_tile_grass.png')
+        left_top_corner_img = pygame.image.load('img/tilesheets/Mossy Tileset/corner_tile_grass2.png')
+        right_down_corner_img = pygame.image.load('img/tilesheets/Mossy Tileset/corner_tile_grass4.png')
+        right_top_corner_img = pygame.image.load('img/tilesheets/Mossy Tileset/corner_tile_grass3.png')
+        dark_img = pygame.image.load('img/tilesheets/Mossy Tileset/dark_tile.png')
+        small_corner_top_left = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_topL.png')
+        small_corner_right_TnB_R = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_grass_T&B-R.png')
+        small_corner_bottom_left = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_downL.png')
+
+
+        row_count = 0
+        for row in data:
+            col_count = 0
+            for tile in row:    
+                if tile == 1: 
+                    img = pygame.transform.scale(dirt_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 2: 
+                    img = pygame.transform.scale(wall_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 3: 
+                    img = pygame.transform.scale(left_down_corner_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 4: 
+                    img = pygame.transform.scale(left_top_corner_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 5: 
+                    img = pygame.transform.scale(right_down_corner_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 6: 
+                    img = pygame.transform.scale(right_top_corner_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 7: 
+                    img = pygame.transform.scale(dark_img, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 8: 
+                    img = pygame.transform.scale(small_corner_top_left, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 9: 
+                    img = pygame.transform.scale(small_corner_right_TnB_R, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 10: 
+                    img = pygame.transform.scale(small_corner_bottom_left, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                col_count += 1 
+            row_count += 1
+
+    
+    def draw(self):
+        for tile in self.tile_list:
+            WIN.blit(tile[0], tile[1])
+    
+
+world_data = [
+[2, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 10],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 1, 1, 1, 8],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
+[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7, 7, 7, 7, 7],
+[3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 7, 7, 7, 7, 7],
+]
+
+world = World(world_data)
 
 run = True
 while run:
@@ -218,6 +317,11 @@ while run:
             enemy.ai()
             enemy.draw()
             enemy.move(False, False)
+
+        world.draw()
+        # Grid
+        # draw_grid()
+
 
     # Event handler
     for event in pygame.event.get():
