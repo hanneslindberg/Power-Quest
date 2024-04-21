@@ -165,7 +165,7 @@ collectible_group.add(collectible)
 
 # Grid layout
 def draw_grid():
-    for line in range(0,5):
+    for line in range(0,25):
         pygame.draw.line(WIN, (255, 255, 255), (0, line * TILE_SIZE), (WIDTH, line * TILE_SIZE))
         pygame.draw.line(WIN, (255, 255, 255), (line * TILE_SIZE, 0), (line * TILE_SIZE, HEIGHT))
 
@@ -195,10 +195,6 @@ class World():
         small_corner_bottom_right = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_downR.png')
         small_corner_LnR_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_LR_Bottom.png')
         grass_end_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_bottom.png')
-
-        
-        # Create image array for tiles
-        tile_images = ['dirt_img', 'wall_img', 'left_down_corner_img', 'left_top_corner_img', 'right_down_corner_img']
 
         row_count = 0
         for row in data:
@@ -358,6 +354,7 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             WIN.blit(tile[0], tile[1])
+            pygame.draw.rect(WIN, (255, 255, 255), tile[1], 2)
     
 
 world_data = [
@@ -397,6 +394,10 @@ while run:
 
         collectible_group.draw(WIN)
 
+        # Temp block
+        pygame.draw.rect(WIN, (255, 255, 255), player1, 2)
+        pygame.draw.rect(WIN, (255, 255, 255), player2, 2)
+
         # Player 1
         player1.draw()
         player1.move(False, False)
@@ -411,9 +412,7 @@ while run:
 
         world.draw()
         # Grid
-        # draw_grid()
-
-
+         
     # Event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

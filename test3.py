@@ -186,96 +186,40 @@ class World():
         small_corner_bottom_left = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_downL.png')
         grass_top_img = pygame.image.load('img/tilesheets/Mossy Tileset/grass_top.png')
 
-        
-        # Create image array for tiles
-        tile_images = ['dirt_img', 'wall_img', 'left_down_corner_img', 'left_top_corner_img', 'right_down_corner_img', 'right_top_corner_img', 'dark_img', 'small_corner_top_left', 'small_corner_right_TnB_R', 'small_corner_bottom_left', 'grass_top_img']
 
+    # Dictionary to map tile values to image names
+        tile_mapping = {
+        1: 'dirt_img',
+        2: 'wall_img',
+        3: 'left_down_corner_img',
+        4: 'left_top_corner_img',
+        5: 'right_down_corner_img',
+        6: 'right_top_corner_img',
+        7: 'dark_img',
+        8: 'small_corner_top_left',
+        9: 'small_corner_right_TnB_R',
+        10: 'small_corner_bottom_left',
+        11: 'grass_top_img'
+}
+
+# Iterate through rows and columns in the data
         row_count = 0
         for row in data:
             col_count = 0
-            for tile in row: 
-                for i in tile_images:   
-                    if tile == :
-                        img = pygame.transform.scale({i}, (TILE_SIZE, TILE_SIZE))
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * TILE_SIZE
-                        img_rect.y = row_count * TILE_SIZE
-                        tile = (img, img_rect)
-                        self.tile_list.append(tile)
-                # if tile == 2: 
-                #     img = pygame.transform.scale(wall_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 3: 
-                #     img = pygame.transform.scale(left_down_corner_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 4: 
-                #     img = pygame.transform.scale(left_top_corner_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 5: 
-                #     img = pygame.transform.scale(right_down_corner_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 6: 
-                #     img = pygame.transform.scale(right_top_corner_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 7: 
-                #     img = pygame.transform.scale(dark_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 8: 
-                #     img = pygame.transform.scale(small_corner_top_left, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 9: 
-                #     img = pygame.transform.scale(small_corner_right_TnB_R, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 10: 
-                #     img = pygame.transform.scale(small_corner_bottom_left, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                # if tile == 11: 
-                #     img = pygame.transform.scale(grass_top_img, (TILE_SIZE, TILE_SIZE))
-                #     img_rect = img.get_rect()
-                #     img_rect.x = col_count * TILE_SIZE
-                #     img_rect.y = row_count * TILE_SIZE
-                #     tile = (img, img_rect)
-                #     self.tile_list.append(tile)
-                col_count += 1 
+            for tile in row:
+                if tile in tile_mapping:
+                    # Get the image object from the mapping (not a string)
+                    img = pygame.transform.scale(tile_mapping[tile], (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    
+                    # Add the tile to the tile list
+                    self.tile_list.append((img, img_rect))
+                
+                col_count += 1
             row_count += 1
 
-    
     def draw(self):
         for tile in self.tile_list:
             WIN.blit(tile[0], tile[1])
