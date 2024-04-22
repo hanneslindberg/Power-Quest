@@ -42,7 +42,7 @@ jump = False
 
 def draw_bg():
     WIN.blit(BG_IMAGE, (0, 0))
-    pygame.draw.line(WIN, "red", (0, 500), (WIDTH, 500))
+    # pygame.draw.line(WIN, "red", (0, 500), (WIDTH, 500))
 
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
@@ -78,6 +78,8 @@ class Char(pygame.sprite.Sprite):
             self.animation_list.append(temp_list)
 
         self.image = self.animation_list[self.action][self.frame_index]
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -90,6 +92,7 @@ class Char(pygame.sprite.Sprite):
         # Reset movement variables
         dx = 0
         dy = 0
+        on_ground = False
 
         # Assing movement variables if moving left or right or jumping
         if self.char_type == "enemy":
@@ -113,8 +116,10 @@ class Char(pygame.sprite.Sprite):
                 dx = self.speed
                 self.flip = False
                 self.direction = 1
-            if keys[self.keys[2]] and self.rect.bottom == 500 and self.alive:
+            if keys[self.keys[2]] and self.jump == False:
                 self.vel_y = -13.5
+                self.jump = True
+            if keys[self.keys[2]] == False:
                 self.jump = False
 
         # Apply gravity
@@ -123,20 +128,31 @@ class Char(pygame.sprite.Sprite):
             self.vel_y = 10
         dy += self.vel_y
 
-        # Check for colision
-        if self.rect.bottom + dy > 500:
-            dy = 500 - self.rect.bottom
+        # Map collision -------------------------------------------------------------------------------
+        for tile in world.tile_list:
+            # Check for collision in x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                dx = 0
+
+            # Check for collision in y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                # Check if below the ground i.e Jumping
+                if self.vel_y < 0:
+                        dy = tile[1].bottom - self.rect.top
+                        self.vel_y = 0
+                # Check if above the ground i.e falling
+                elif self.vel_y >= 0:
+                        dy = tile[1].top - self.rect.bottom
+                        self.vel_y = 0
+
+                
 
         # Update rectangle position
         self.rect.x += dx
         self.rect.y += dy
 
-    # def attack(self):
-    #     # Check if enemy is near player and attack
-    #     if enemy.rect.centerx - player1.rect.centerx <= (0.6 * enemy.rect.centerx):
-    #         player1.alive = False
-    #     if enemy.rect.centerx - player2.rect.centerx <= (0.6 * enemy.rect.centerx):
-    #         player2.alive = False
+        # Draw player border onto screen
+        pygame.draw.rect(WIN, (255, 255, 255), self.rect, 2)
  
     def ai(self):
         # Add "alive" check
