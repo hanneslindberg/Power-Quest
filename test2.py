@@ -19,7 +19,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Load images
-BG_IMAGE = pygame.image.load("img/room1.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
+BG_IMAGE = pygame.image.load("img/bg.jpg") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
 start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
 # Collectibles
