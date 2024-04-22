@@ -5,7 +5,7 @@ import pygame
 import button
 import random
 import os
-import test3
+import test
 
 pygame.init()
 
@@ -19,7 +19,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Load images
-BG_IMAGE = pygame.image.load("img/room1.png") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
+BG_IMAGE = pygame.image.load("img/bg.jpg") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
 start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
 # Collectibles
@@ -92,30 +92,31 @@ class Char(pygame.sprite.Sprite):
         dy = 0
 
         # Assing movement variables if moving left or right or jumping
-        if self.char_type == "enemy":
-            if moving_left:
-                dx = -self.speed
-                self.flip = True
-                self.direction = -1
-            if moving_right:
-                dx = self.speed
-                self.flip = False
-                self.direction = 1
-            if moving_left == False and moving_right == False:
-                dx = 0
-        else:
-            keys = pygame.key.get_pressed()
-            if keys[self.keys[0]]:
-                dx = -self.speed
-                self.flip = True
-                self.direction = -1
-            if keys[self.keys[1]]:
-                dx = self.speed
-                self.flip = False
-                self.direction = 1
-            if keys[self.keys[2]] and self.rect.bottom == 500 and self.alive:
-                self.vel_y = -13.5
-                self.jump = False
+        if self.alive:
+            if self.char_type == "enemy":
+                if moving_left:
+                    dx = -self.speed
+                    self.flip = True
+                    self.direction = -1
+                if moving_right:
+                    dx = self.speed
+                    self.flip = False
+                    self.direction = 1
+                if moving_left == False and moving_right == False:
+                    dx = 0
+            else:
+                keys = pygame.key.get_pressed()
+                if keys[self.keys[0]]:
+                    dx = -self.speed
+                    self.flip = True
+                    self.direction = -1
+                if keys[self.keys[1]]:
+                    dx = self.speed
+                    self.flip = False
+                    self.direction = 1
+                if keys[self.keys[2]] and self.rect.bottom == 500 and self.alive:
+                    self.vel_y = -13.5
+                    self.jump = False
 
         # Apply gravity
         self.vel_y += GRAVITY
@@ -131,12 +132,14 @@ class Char(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
 
-    # def attack(self):
-    #     # Check if enemy is near player and attack
-    #     if enemy.rect.centerx - player1.rect.centerx <= (0.6 * enemy.rect.centerx):
-    #         player1.alive = False
-    #     if enemy.rect.centerx - player2.rect.centerx <= (0.6 * enemy.rect.centerx):
-    #         player2.alive = False
+    def attack(self):
+        # Check if enemy is near player and attack
+        if enemy.rect.centerx - player1.rect.centerx <= (0.2 * enemy.rect.centerx):
+            player1.alive = False
+            # enemy.update_action(2)
+        if enemy.rect.centerx - player2.rect.centerx <= (0.2 * enemy.rect.centerx):
+            player2.alive = False
+            # enemy.update_action(2)
  
     def ai(self):
         # Add "alive" check
@@ -166,7 +169,6 @@ class Char(pygame.sprite.Sprite):
                 self.idling = False
 
     def update_animation(self):
-        # Update animation
         ANIMATION_COOLDOWN = 100
         # Update image depending on current frame
         self.image = self.animation_list[self.action][self.frame_index]
@@ -231,7 +233,7 @@ world_data = [
 [12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 7, 7, 7, 7, 7],
 ]
 
-world = test3.World(world_data)
+world = test.World(world_data)
 
 run = True
 while run:
@@ -251,16 +253,17 @@ while run:
         collectible_group.draw(WIN)
         
         # Player 1
+        
+        player1.draw()
         if player1.alive:
-            player1.draw()
             if pygame.K_a or pygame.K_d:
                 player1.update_action(1)# 1: run
             else:
                 player1.update_action(2)# 2: idle
             player1.move(False, False)
         # Player 2
-        if player1.alive:
-            player2.draw()
+        player2.draw()
+        if player2.alive:
             if pygame.K_LEFT or pygame.K_RIGHT:
                 player2.update_action(1)# 1: run
             else:
@@ -273,6 +276,7 @@ while run:
                 enemy.ai()
                 enemy.draw()
                 enemy.move(False, False)
+                enemy.attack()
 
         # Draw world
         world.draw()
