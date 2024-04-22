@@ -413,8 +413,7 @@ while run:
             enemy.move(False, False)
 
         world.draw()
-        # Grid
-         
+
     # Event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
