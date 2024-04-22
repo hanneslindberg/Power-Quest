@@ -397,6 +397,8 @@ while run:
         # Temp block
         pygame.draw.rect(WIN, (255, 255, 255), player1, 2)
         pygame.draw.rect(WIN, (255, 255, 255), player2, 2)
+        pygame.draw.rect(WIN, (255, 0, 0), enemy, 2)
+        pygame.draw.rect(WIN, (255, 0, 0), enemy2, 2)
 
         # Player 1
         player1.draw()
@@ -411,8 +413,7 @@ while run:
             enemy.move(False, False)
 
         world.draw()
-        # Grid
-         
+
     # Event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
