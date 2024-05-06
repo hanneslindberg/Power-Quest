@@ -6,6 +6,7 @@ import button
 import random
 import os
 import worldmap
+from worldmap import world_data
 
 pygame.init()
 
@@ -219,8 +220,8 @@ class Collectible(pygame.sprite.Sprite):
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
-player1 = Char("player1", 200, 200, 0.15, 3, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 300, 200, 0.15, 3, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Char("player2", 300, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
 enemy = Char("enemy", 400, 500, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy2 = Char("enemy", 500, 500, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy_group.add(enemy)
@@ -230,24 +231,6 @@ collectible = Collectible("Coin", 200, 200)
 collectible_group.add(collectible)
 collectible = Collectible("Trophy", 400, 200)
 collectible_group.add(collectible)
-
-world_data = [
-[14, 0, 0, 0, 0, 0, 3, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 10],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 11, 11, 11, 8],
-[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 16, 0, 0, 13, 7, 7, 7, 7, 7],
-[14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
-[14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
-[12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 7, 7, 7, 7, 7],
-]
 
 world = worldmap.World(world_data)
 
