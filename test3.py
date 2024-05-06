@@ -33,6 +33,7 @@ class World():
         small_corner_bottom_right = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_corner_downR.png')
         small_corner_LnR_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_LR_Bottom.png')
         grass_end_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_bottom.png')
+        grass_end_left = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_Left.png')
 
         row_count = 0
         for row in data:
@@ -180,6 +181,13 @@ class World():
                     self.tile_list.append(tile)
                 if tile == 21: 
                     img = pygame.transform.scale(grass_end_bottom, (TILE_SIZE, TILE_SIZE))
+                    img_rect = img.get_rect()
+                    img_rect.x = col_count * TILE_SIZE
+                    img_rect.y = row_count * TILE_SIZE
+                    tile = (img, img_rect)
+                    self.tile_list.append(tile)
+                if tile == 22:
+                    img = pygame.transform.scale(grass_end_left, (TILE_SIZE, TILE_SIZE))
                     img_rect = img.get_rect()
                     img_rect.x = col_count * TILE_SIZE
                     img_rect.y = row_count * TILE_SIZE
