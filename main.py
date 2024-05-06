@@ -20,7 +20,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # Load images
-BG_IMAGE = pygame.image.load("img/bg.jpg") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
+BG_IMAGE = pygame.image.load("img/bg.jpg")
 start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
 # Collectibles
@@ -140,22 +140,22 @@ class Char(pygame.sprite.Sprite):
                 dx = 0
 
             # Check for collision in y direction
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height + 1):
                 # Check if below the ground i.e Jumping
                 if self.vel_y < 0:
                         dy = tile[1].bottom - self.rect.top
                         self.vel_y = 0
                 # Check if above the ground i.e falling
                 elif self.vel_y >= 0:
-                        dy = tile[1].top - self.rect.bottom + 1
+                        dy = tile[1].top - self.rect.bottom
                         self.vel_y = 0
- 
+
         # Update rectangle position
         self.rect.x += dx
         self.rect.y += dy
 
         # Draw player border onto screen
-        pygame.draw.rect(WIN, (255, 255, 255), self.rect, 2)
+        # pygame.draw.rect(WIN, (255, 255, 255), self.rect, 2)
  
     def ai(self):
         # Add "alive" check
@@ -220,10 +220,10 @@ class Collectible(pygame.sprite.Sprite):
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
-player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 300, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
-enemy = Char("enemy", 400, 500, 0.2, 0.8, [moving_left, moving_right, jump])
-enemy2 = Char("enemy", 500, 500, 0.2, 0.8, [moving_left, moving_right, jump])
+player1 = Char("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Char("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+enemy = Char("enemy", 300, 300, 0.2, 0.8, [moving_left, moving_right, jump])
+enemy2 = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy_group.add(enemy)
 enemy_group.add(enemy2)
 

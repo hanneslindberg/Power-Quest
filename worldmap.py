@@ -63,7 +63,7 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             WIN.blit(tile[0], tile[1])
-            pygame.draw.rect(WIN, (255, 255, 255), tile[1], 1)
+            # pygame.draw.rect(WIN, (255, 255, 255), tile[1], 1)
     
 
 world_data = [
