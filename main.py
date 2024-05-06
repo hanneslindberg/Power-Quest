@@ -276,7 +276,7 @@ while run:
                 enemy.ai()
                 enemy.draw()
                 enemy.move(False, False)
-                enemy.attack()
+                # enemy.attack()
 
         # Draw world
         world.draw()

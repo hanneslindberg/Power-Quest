@@ -16,7 +16,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Power Quest")
 
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 120
 
 # Load images
 BG_IMAGE = pygame.image.load("img/bg.jpg") # ---------------------------------------------- Byt ut bakgrunds bilden så småning om
@@ -31,7 +31,7 @@ collectibles = {
 }
 
 # Variables
-GRAVITY = 0.65  
+GRAVITY = 0.35  
 TILE_SIZE = 16
 
 start_game = False
@@ -54,7 +54,7 @@ class Char(pygame.sprite.Sprite):
         self.char_type = char_type
         self.alive = True
         self.speed = speed
-        self.direction = 1
+        self.direction = 1  
         self.vel_y = 0
         self.jump = False
         self.flip = False
@@ -117,7 +117,7 @@ class Char(pygame.sprite.Sprite):
                 self.flip = False
                 self.direction = 1
             if keys[self.keys[2]] and self.jump == False:
-                self.vel_y = -13.5
+                self.vel_y = -10
                 self.jump = True
             if keys[self.keys[2]] == False:
                 self.jump = False
@@ -144,9 +144,7 @@ class Char(pygame.sprite.Sprite):
                 elif self.vel_y >= 0:
                         dy = tile[1].top - self.rect.bottom
                         self.vel_y = 0
-
-                
-
+ 
         # Update rectangle position
         self.rect.x += dx
         self.rect.y += dy
@@ -217,8 +215,8 @@ class Collectible(pygame.sprite.Sprite):
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
-player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 300, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+player1 = Char("player1", 200, 200, 0.15, 3, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Char("player2", 300, 200, 0.15, 3, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
 enemy = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy2 = Char("enemy", 500, 300, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy_group.add(enemy)
