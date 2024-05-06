@@ -34,6 +34,7 @@ class World():
         small_corner_LnR_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_LR_Bottom.png')
         grass_end_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_bottom.png')
         grass_end_left = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_Left.png')
+        thorns_top = pygame.image.load('img/tilesheets/Mossy Tileset/Thorns_grass_top.jpg')
 
         tile_images = [
             dirt_img, wall_img, left_down_corner_img, left_top_corner_img, 
@@ -41,7 +42,7 @@ class World():
             small_corner_right_TnB_R, small_corner_bottom_left, grass_top_img, small_corner_top_right, 
             grass_wall_L, grass_wall_R, grass_bottom, grass_end_R, 
             small_grass_Top_LR, grass_end_top, small_corner_bottom_right, 
-            small_corner_LnR_bottom, grass_end_bottom, grass_end_left
+            small_corner_LnR_bottom, grass_end_bottom, grass_end_left, thorns_top
             ]
         
         row_count = 0
