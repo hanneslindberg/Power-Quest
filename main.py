@@ -5,7 +5,7 @@ import pygame
 import button
 import random
 import os
-import test
+import worldmap
 
 pygame.init()
 
@@ -31,7 +31,7 @@ collectibles = {
 }
 
 # Variables
-GRAVITY = 0.65  
+GRAVITY = 0.35  
 TILE_SIZE = 16
 
 start_game = False
@@ -42,7 +42,7 @@ jump = False
 
 def draw_bg():
     WIN.blit(BG_IMAGE, (0, 0))
-    pygame.draw.line(WIN, "red", (0, 500), (WIDTH, 500))
+    # pygame.draw.line(WIN, "red", (0, 500), (WIDTH, 500))
 
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
@@ -54,7 +54,7 @@ class Char(pygame.sprite.Sprite):
         self.char_type = char_type
         self.alive = True
         self.speed = speed
-        self.direction = 1
+        self.direction = 1  
         self.vel_y = 0
         self.jump = False
         self.flip = False
@@ -78,6 +78,8 @@ class Char(pygame.sprite.Sprite):
             self.animation_list.append(temp_list)
 
         self.image = self.animation_list[self.action][self.frame_index]
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -90,33 +92,39 @@ class Char(pygame.sprite.Sprite):
         # Reset movement variables
         dx = 0
         dy = 0
+        on_ground = False
 
         # Assing movement variables if moving left or right or jumping
-        if self.alive:
-            if self.char_type == "enemy":
-                if moving_left:
-                    dx = -self.speed
-                    self.flip = True
-                    self.direction = -1
-                if moving_right:
-                    dx = self.speed
-                    self.flip = False
-                    self.direction = 1
-                if moving_left == False and moving_right == False:
-                    dx = 0
-            else:
-                keys = pygame.key.get_pressed()
-                if keys[self.keys[0]]:
-                    dx = -self.speed
-                    self.flip = True
-                    self.direction = -1
-                if keys[self.keys[1]]:
-                    dx = self.speed
-                    self.flip = False
-                    self.direction = 1
-                if keys[self.keys[2]] and self.rect.bottom == 500 and self.alive:
-                    self.vel_y = -13.5
-                    self.jump = False
+        if self.char_type == "enemy":
+            if moving_left:
+                dx = -self.speed
+                self.flip = True
+                self.direction = -1
+            if moving_right:
+                dx = self.speed
+                self.flip = False
+                self.direction = 1
+            if moving_left == False and moving_right == False:
+                dx = 0
+        else:
+            keys = pygame.key.get_pressed()
+            if keys[self.keys[0]]:
+                dx = -self.speed
+                self.flip = True
+                self.direction = -1
+            if keys[self.keys[1]]:
+                dx = self.speed
+                self.flip = False
+                self.direction = 1
+                
+            on_ground = self.rect.y >= HEIGHT - self.height or any(tile[1].colliderect(self.rect.x, self.rect.y + 1, self.width, self.height) for tile in world.tile_list)
+        
+            if keys[self.keys[2]] and not self.jump and on_ground:
+                self.vel_y = -10
+
+                self.jump = True
+            if not keys[self.keys[2]]:
+                self.jump = False
 
         # Apply gravity
         self.vel_y += GRAVITY
@@ -124,22 +132,29 @@ class Char(pygame.sprite.Sprite):
             self.vel_y = 10
         dy += self.vel_y
 
-        # Check for colision
-        if self.rect.bottom + dy > 500:
-            dy = 500 - self.rect.bottom
+        # Map collision -------------------------------------------------------------------------------
+        for tile in world.tile_list:
+            # Check for collision in x direction
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                dx = 0
 
+            # Check for collision in y direction
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                # Check if below the ground i.e Jumping
+                if self.vel_y < 0:
+                        dy = tile[1].bottom - self.rect.top
+                        self.vel_y = 0
+                # Check if above the ground i.e falling
+                elif self.vel_y >= 0:
+                        dy = tile[1].top - self.rect.bottom + 1
+                        self.vel_y = 0
+ 
         # Update rectangle position
         self.rect.x += dx
         self.rect.y += dy
 
-    def attack(self):
-        # Check if enemy is near player and attack
-        if enemy.rect.centerx - player1.rect.centerx <= (0.2 * enemy.rect.centerx):
-            player1.alive = False
-            # enemy.update_action(2)
-        if enemy.rect.centerx - player2.rect.centerx <= (0.2 * enemy.rect.centerx):
-            player2.alive = False
-            # enemy.update_action(2)
+        # Draw player border onto screen
+        pygame.draw.rect(WIN, (255, 255, 255), self.rect, 2)
  
     def ai(self):
         # Add "alive" check
@@ -169,6 +184,7 @@ class Char(pygame.sprite.Sprite):
                 self.idling = False
 
     def update_animation(self):
+        # Update animation
         ANIMATION_COOLDOWN = 100
         # Update image depending on current frame
         self.image = self.animation_list[self.action][self.frame_index]
@@ -203,10 +219,10 @@ class Collectible(pygame.sprite.Sprite):
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
-player1 = Char("player1", 200, 200, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 300, 200, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
-enemy = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump])
-enemy2 = Char("enemy", 500, 300, 0.2, 0.8, [moving_left, moving_right, jump])
+player1 = Char("player1", 200, 200, 0.15, 3, [pygame.K_a, pygame.K_d, pygame.K_w])
+player2 = Char("player2", 300, 200, 0.15, 3, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
+enemy = Char("enemy", 400, 500, 0.2, 0.8, [moving_left, moving_right, jump])
+enemy2 = Char("enemy", 500, 500, 0.2, 0.8, [moving_left, moving_right, jump])
 enemy_group.add(enemy)
 enemy_group.add(enemy2)
 
@@ -222,18 +238,18 @@ world_data = [
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 0, 0, 0, 0, 13],
-[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 0, 0, 0, 0, 13],
+[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 0, 0, 0, 0, 0, 0, 13],
+[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 11, 11, 11, 8],
-[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
+[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 16, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
 [12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 7, 7, 7, 7, 7],
 ]
 
-world = test.World(world_data)
+world = worldmap.World(world_data)
 
 run = True
 while run:
@@ -253,17 +269,16 @@ while run:
         collectible_group.draw(WIN)
         
         # Player 1
-        
-        player1.draw()
         if player1.alive:
+            player1.draw()
             if pygame.K_a or pygame.K_d:
                 player1.update_action(1)# 1: run
             else:
                 player1.update_action(2)# 2: idle
             player1.move(False, False)
         # Player 2
-        player2.draw()
-        if player2.alive:
+        if player1.alive:
+            player2.draw()
             if pygame.K_LEFT or pygame.K_RIGHT:
                 player2.update_action(1)# 1: run
             else:
@@ -276,7 +291,6 @@ while run:
                 enemy.ai()
                 enemy.draw()
                 enemy.move(False, False)
-                # enemy.attack()
 
         # Draw world
         world.draw()
