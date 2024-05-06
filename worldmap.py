@@ -34,7 +34,8 @@ class World():
         small_corner_LnR_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_LR_Bottom.png')
         grass_end_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_bottom.png')
         grass_end_left = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_Left.png')
-        thorns_top = pygame.image.load('img/tilesheets/Mossy Tileset/Thorns_grass_top.jpg')
+        thorns_top = pygame.image.load('img/tilesheets/Mossy Tileset/Thorns_grass_top.png')
+        small_corner_TnB_L = pygame.image.load('img/tilesheets\Mossy Tileset\small_green_grass_T&B-L.png')
 
         tile_images = [
             dirt_img, wall_img, left_down_corner_img, left_top_corner_img, 
@@ -42,7 +43,7 @@ class World():
             small_corner_right_TnB_R, small_corner_bottom_left, grass_top_img, small_corner_top_right, 
             grass_wall_L, grass_wall_R, grass_bottom, grass_end_R, 
             small_grass_Top_LR, grass_end_top, small_corner_bottom_right, 
-            small_corner_LnR_bottom, grass_end_bottom, grass_end_left, thorns_top
+            small_corner_LnR_bottom, grass_end_bottom, grass_end_left, thorns_top, small_corner_TnB_L
             ]
         
         row_count = 0
@@ -63,25 +64,24 @@ class World():
     def draw(self):
         for tile in self.tile_list:
             WIN.blit(tile[0], tile[1])
-            pygame.draw.rect(WIN, (255, 255, 255), tile[1], 1)
     
 
 world_data = [
 [14, 0, 0, 0, 0, 0, 3, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 10],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 0, 0, 0, 0, 13],
-[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 0, 0, 0, 0, 13],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 13],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 14, 0, 0, 0, 1, 24],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 14, 0, 0, 0, 0, 13],
+[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 13, 9, 1, 16, 0, 0, 13],
+[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 3, 5, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 11, 11, 11, 8],
-[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
+[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 16, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
-[12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 8, 7, 7, 7, 7, 7],
+[12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 23, 23, 23, 23, 23, 23, 8, 7, 7, 7, 7, 7],
 ]
 
 world = World(world_data)
