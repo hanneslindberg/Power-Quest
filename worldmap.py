@@ -35,15 +35,23 @@ class World():
         grass_end_bottom = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_bottom.png')
         grass_end_left = pygame.image.load('img/tilesheets/Mossy Tileset/grass_end_Left.png')
         thorns_top = pygame.image.load('img/tilesheets/Mossy Tileset/Thorns_grass_top.png')
-        small_corner_TnB_L = pygame.image.load('img/tilesheets\Mossy Tileset\small_green_grass_T&B-L.png')
+        small_corner_TnB_L = pygame.image.load('img/tilesheets/Mossy Tileset/small_green_grass_T&B-L.png')
+        right_wall_corner_left_down = pygame.image.load('img/tilesheets/Mossy Tileset/grass_wall_right_corner_left_down.png')
+        thorns_roof = pygame.image.load('img/tilesheets/Mossy Tileset/thorns_top.png')
+        thorns_poking_right = pygame.image.load('img/tilesheets/Mossy Tileset/thorns_poking_right.png')
+        thorns_poking_left = pygame.image.load('img/tilesheets/Mossy Tileset/thorns_poking_left.png')
 
         tile_images = [
-            dirt_img, wall_img, left_down_corner_img, left_top_corner_img, 
-            right_down_corner_img, right_top_corner_img, dark_img, small_corner_top_left,
-            small_corner_right_TnB_R, small_corner_bottom_left, grass_top_img, small_corner_top_right, 
-            grass_wall_L, grass_wall_R, grass_bottom, grass_end_R, 
-            small_grass_Top_LR, grass_end_top, small_corner_bottom_right, 
-            small_corner_LnR_bottom, grass_end_bottom, grass_end_left, thorns_top, small_corner_TnB_L
+            dirt_img, wall_img, left_down_corner_img, # 1 - 3
+            left_top_corner_img, right_down_corner_img, right_top_corner_img, # 4 - 6 
+            dark_img, small_corner_top_left, small_corner_right_TnB_R, # 7 - 9
+            small_corner_bottom_left, grass_top_img, small_corner_top_right, # 10 - 12
+            grass_wall_L, grass_wall_R, grass_bottom, # 13 - 15
+            grass_end_R, small_grass_Top_LR, grass_end_top, # 16 - 18
+            small_corner_bottom_right, small_corner_LnR_bottom, grass_end_bottom, # 19 - 21
+            grass_end_left, thorns_top, small_corner_TnB_L, # 22 - 24
+            right_wall_corner_left_down, thorns_roof, thorns_poking_right, # 25 - 27
+            thorns_poking_left # 28 - 30
             ]
         
         row_count = 0
@@ -66,21 +74,21 @@ class World():
             WIN.blit(tile[0], tile[1])
 
 world_data = [
-[14, 0, 0, 0, 0, 0, 3, 15, 15, 15, 15, 15, 15, 15, 15, 20, 0, 0, 3, 15, 15, 15, 15, 15, 10],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 6, 0, 0, 0, 0, 13],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 14, 0, 22, 1, 1, 24],
-[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 14, 0, 0, 0, 0, 13],
-[12, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 6, 0, 0, 13, 14, 0, 0, 0, 0, 13],
-[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 3, 15, 1, 1, 16, 0, 13],
+[14, 0, 0, 0, 0, 3, 15, 15, 15, 15, 26, 26, 26, 15, 15, 25, 0, 0, 3, 15, 15, 15, 15, 15, 10],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 28],
+[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 28],
+[14, 0, 22, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 22, 6, 0, 0, 0, 0, 28],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 2, 0, 22, 1, 1, 24],
+[14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 13],
+[12, 23, 11, 11, 11, 11, 11, 11, 11, 11, 11, 17, 23, 23, 11, 6, 0, 0, 0, 2, 0, 0, 0, 0, 13],
+[19, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 5, 0, 0, 22, 15, 1, 1, 16, 0, 13],
 [14, 0, 0, 0, 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 11, 11, 11, 11, 8],
-[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
+[14, 0, 0, 0, 18, 0, 0, 22, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 16, 0, 0, 0, 13, 7, 7, 7, 7, 7],
 [14, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 7, 7, 7, 7],
-[12, 11, 11, 11, 17, 11, 11, 11, 11, 11, 11, 11, 11, 23, 23, 23, 23, 23, 23, 8, 7, 7, 7, 7, 7],
+[12, 11, 11, 11, 17, 23, 23, 23, 23, 23, 11, 11, 11, 23, 23, 23, 23, 23, 23, 8, 7, 7, 7, 7, 7],
 ]
 
 world = World(world_data)
