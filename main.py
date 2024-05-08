@@ -19,10 +19,16 @@ pygame.display.set_caption("Power Quest")
 clock = pygame.time.Clock()
 FPS = 60
 
+# Load sound
+bg_music = pygame.mixer.Sound("sound\Earth.mp3")
+jump_sound = pygame.mixer.Sound("sound\jump_sound.mp3")
+jump_sound.set_volume(0.5)
+
 # Load images
 BG_IMAGE = pygame.image.load("img/bg.jpg")
 start_img = pygame.image.load("img/buttons/start_image.png").convert_alpha()
 quit_img = pygame.image.load("img/buttons/quit_image.png").convert_alpha()
+
 # Collectibles
 coins_img = pygame.image.load("img/icons/coin.png").convert_alpha()
 trophy_img = pygame.image.load("img/icons/trophy.png").convert_alpha()
@@ -34,8 +40,9 @@ collectibles = {
 # Variables
 GRAVITY = 0.35  
 TILE_SIZE = 16
-
 start_game = False
+bg_music_played = False
+
 # Player action variables
 moving_left = False
 moving_right = False
@@ -50,7 +57,7 @@ quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
 
 # Character class
 class Char(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, scale, speed, keys):
+    def __init__(self, char_type, x, y, scale, speed, keys, scalex, scaley):
         pygame.sprite.Sprite.__init__(self)
         self.char_type = char_type
         self.alive = True
@@ -82,6 +89,7 @@ class Char(pygame.sprite.Sprite):
         self.width = self.image.get_width()
         self.height = self.image.get_height()
         self.rect = self.image.get_rect()
+        self.rect.scale_by_ip(scalex, scaley)
         self.rect.center = (x, y)
 
         # AI specific variavles
@@ -118,11 +126,12 @@ class Char(pygame.sprite.Sprite):
                 self.flip = False
                 self.direction = 1
                 
-            on_ground = self.rect.y >= HEIGHT - self.height or any(tile[1].colliderect(self.rect.x, self.rect.y + 1, self.width, self.height) for tile in world.tile_list)
+            on_ground = self.rect.y >= HEIGHT - self.rect.height or any(tile[1].colliderect(self.rect.x, self.rect.y + 1, self.rect.width, self.rect.height) for tile in world.tile_list)
         
             if keys[self.keys[2]] and not self.jump and on_ground:
-                self.vel_y = -10
+                jump_sound.play()
 
+                self.vel_y = -10
                 self.jump = True
             if not keys[self.keys[2]]:
                 self.jump = False
@@ -136,11 +145,11 @@ class Char(pygame.sprite.Sprite):
         # Map collision -------------------------------------------------------------------------------
         for tile in world.tile_list:
             # Check for collision in x direction
-            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.rect.width, self.rect.height):
                 dx = 0
 
             # Check for collision in y direction
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height + 1):
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.rect.width, self.rect.height + 1):
                 # Check if below the ground i.e Jumping
                 if self.vel_y < 0:
                         dy = tile[1].bottom - self.rect.top
@@ -206,13 +215,17 @@ class Char(pygame.sprite.Sprite):
             self.update_time = pygame.time.get_ticks()
 
     def draw(self):
-        WIN.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
+        if self.char_type == "enemy":
+            WIN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.center[0] - self.width / 2, self.rect.center[1] - self.height / 2 + 5))
+        else:
+            WIN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.center[0] - self.width / 2, self.rect.center[1] - self.height / 2))
+        # pygame.draw.rect(WIN, "white", self.rect, 1)
 
 class Collectible(pygame.sprite.Sprite):
-    def __init__(self, item_type, x, y):
+    def __init__(self, item_type, scale, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.item_type = item_type
-        self.image = collectibles[self.item_type]
+        self.image = pygame.transform.scale(collectibles[self.item_type], (int(collectibles[self.item_type].get_width() * scale), int(collectibles[self.item_type].get_height() * scale)))
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
 
@@ -220,16 +233,16 @@ class Collectible(pygame.sprite.Sprite):
 enemy_group = pygame.sprite.Group()
 collectible_group = pygame.sprite.Group()
 
-player1 = Char("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w])
-player2 = Char("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP])
-enemy = Char("enemy", 300, 300, 0.2, 0.8, [moving_left, moving_right, jump])
-enemy2 = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump])
+player1 = Char("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w], 1, 1 )
+player2 = Char("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP], 1, 1)
+enemy = Char("enemy", 300, 300, 0.2, 0.8, [moving_left, moving_right, jump], 0.4, 0.9)
+enemy2 = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump], 0.4, 0.9)
 enemy_group.add(enemy)
 enemy_group.add(enemy2)
 
-collectible = Collectible("Coin", 200, 200)
+collectible = Collectible("Trophy", 1, 120, 110)
 collectible_group.add(collectible)
-collectible = Collectible("Trophy", 400, 200)
+collectible = Collectible("Coin", 0.05, 733, 250)
 collectible_group.add(collectible)
 
 world = worldmap.World(world_data)
@@ -241,6 +254,11 @@ while run:
     if start_game == False:
         WIN.fill(BG)
 
+        if not bg_music_played:
+            bg_music.play(loops = -1)
+            bg_music_played = True
+        bg_music.set_volume(0.5)
+
         if start_button.draw(WIN):
             start_game = True          
         if quit_button.draw(WIN):
@@ -248,6 +266,8 @@ while run:
     else:        
         WIN.fill(BG)
         draw_bg()
+
+        bg_music.set_volume(3.0)
 
         collectible_group.draw(WIN)
         
