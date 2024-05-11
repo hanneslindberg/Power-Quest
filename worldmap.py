@@ -7,6 +7,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 # Variables 
 TILE_SIZE = 40
 
+
 class World():
     def __init__(self, data):
         self.tile_list = []
@@ -60,24 +61,49 @@ class World():
             for tile in row:    
                 for i, n in enumerate(tile_images):
                     if tile == i + 1: 
-                        img = pygame.transform.scale(n, (TILE_SIZE, TILE_SIZE))
-                        img_rect = img.get_rect()
-                        img_rect.x = col_count * TILE_SIZE
-                        img_rect.y = row_count * TILE_SIZE
-                        tile = (img, img_rect)
-                        self.tile_list.append(tile)
+                        if i == 22:
+                            img = pygame.transform.scale(n, (TILE_SIZE, TILE_SIZE))
+                            thorns_top = Thorns(col_count * TILE_SIZE, row_count * TILE_SIZE, img)
+                            thorns_group.add(thorns_top)
+                        elif i == 25:
+                            img = pygame.transform.scale(n, (TILE_SIZE, TILE_SIZE))
+                            thorns_roof = Thorns(col_count * TILE_SIZE, row_count * TILE_SIZE, img)
+                            thorns_group.add(thorns_roof)
+                        elif i == 27:
+                            img = pygame.transform.scale(n, (TILE_SIZE, TILE_SIZE))
+                            thorns_roof = Thorns(col_count * TILE_SIZE, row_count * TILE_SIZE, img)
+                            thorns_group.add(thorns_roof)
+                        else:
+                            img = pygame.transform.scale(n, (TILE_SIZE, TILE_SIZE))
+                            img_rect = img.get_rect()
+                            img_rect.x = col_count * TILE_SIZE
+                            img_rect.y = row_count * TILE_SIZE
+                            tile = (img, img_rect)
+                            self.tile_list.append(tile)
+
+                        
                 col_count += 1 
             row_count += 1
-    
+
     def draw(self):
         for tile in self.tile_list:
             WIN.blit(tile[0], tile[1])
 
+class Thorns(pygame.sprite.Sprite):
+    def __init__(self, x, y, img):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
+
 world_data = [
 [14, 0, 0, 0, 0, 3, 15, 15, 15, 15, 26, 26, 26, 15, 15, 25, 0, 0, 3, 15, 15, 15, 15, 15, 10],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 28],
-[14, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 28],
-[14, 0, 22, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 22, 6, 0, 0, 0, 0, 28],
+[14, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 28],
+[14, 0, 0, 22, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 0, 0, 22, 6, 0, 0, 0, 0, 28],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 2, 0, 22, 1, 1, 24],
 [14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 13],
 [12, 23, 11, 11, 11, 11, 11, 11, 11, 11, 11, 17, 23, 23, 11, 6, 0, 0, 0, 2, 0, 0, 0, 0, 13],
@@ -91,4 +117,5 @@ world_data = [
 [12, 11, 11, 11, 17, 23, 23, 23, 23, 23, 11, 11, 11, 23, 23, 23, 23, 23, 23, 8, 7, 7, 7, 7, 7],
 ]
 
+thorns_group = pygame.sprite.Group()
 world = World(world_data)
