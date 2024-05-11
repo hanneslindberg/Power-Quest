@@ -1,4 +1,3 @@
-# Fixa alla bilder: (Enemy bilderna är för stora), (Animationer för player: Så att de flyter i luften)
 # Lägga till animationer för när man hoppar (PyGame Scrolling Shooter Game Beginner Tutorial in Python - PART 3 | Sprite Animation) 39:00
 
 import pygame
@@ -22,7 +21,7 @@ FPS = 60
 # Load sound
 bg_music = pygame.mixer.Sound("sound\Earth.mp3")
 jump_sound = pygame.mixer.Sound("sound\jump_sound.mp3")
-jump_sound.set_volume(0.5)
+jump_sound.set_volume(0.1)
 
 # Load images
 BG_IMAGE = pygame.image.load("img/bg.jpg")
@@ -50,8 +49,7 @@ jump = False
 
 def draw_bg():
     WIN.blit(BG_IMAGE, (0, 0))
-    # pygame.draw.line(WIN, "red", (0, 500), (WIDTH, 500))
-
+    
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
 
@@ -92,10 +90,11 @@ class Char(pygame.sprite.Sprite):
         self.rect.scale_by_ip(scalex, scaley)
         self.rect.center = (x, y)
 
-        # AI specific variavles
+        # AI specific variables
         self.move_counter = 0
         self.idling = False
         self.idling_counter = 0
+        self.vision = pygame.Rect(0, 0, 300, self.rect.height)
 
     def move(self, moving_left, moving_right):
         # Reset movement variables
@@ -104,37 +103,33 @@ class Char(pygame.sprite.Sprite):
         on_ground = False
 
         # Assing movement variables if moving left or right or jumping
-        if self.char_type == "enemy":
-            if moving_left:
-                dx = -self.speed
-                self.flip = True
-                self.direction = -1
-            if moving_right:
-                dx = self.speed
-                self.flip = False
-                self.direction = 1
-            if moving_left == False and moving_right == False:
-                dx = 0
-        else:
-            keys = pygame.key.get_pressed()
-            if keys[self.keys[0]]:
-                dx = -self.speed
-                self.flip = True
-                self.direction = -1
-            if keys[self.keys[1]]:
-                dx = self.speed
-                self.flip = False
-                self.direction = 1
-                
-            on_ground = self.rect.y >= HEIGHT - self.rect.height or any(tile[1].colliderect(self.rect.x, self.rect.y + 1, self.rect.width, self.rect.height) for tile in world.tile_list)
-        
-            if keys[self.keys[2]] and not self.jump and on_ground:
-                jump_sound.play()
 
-                self.vel_y = -10
-                self.jump = True
-            if not keys[self.keys[2]]:
-                self.jump = False
+        keys = pygame.key.get_pressed()
+        if keys[self.keys[0]]:
+            moving_left = True
+        if keys[self.keys[1]]:
+            moving_right = True
+            
+        on_ground = self.rect.y >= HEIGHT - self.rect.height or any(tile[1].colliderect(self.rect.x, self.rect.y + 1, self.rect.width, self.rect.height) for tile in world.tile_list)
+
+        # Assing movement variables if moving left or right or jumping
+        if moving_left:
+            dx = -self.speed
+            self.flip = True
+            self.direction = -1
+        if moving_right:
+            dx = self.speed
+            self.flip = False
+            self.direction = 1
+        if not moving_left and not moving_right:
+            dx = 0  
+        if keys[self.keys[2]] and not self.jump and on_ground:
+            jump_sound.play()
+
+            self.vel_y = -10
+            self.jump = True
+        if not keys[self.keys[2]]:
+            self.jump = False
 
         # Apply gravity
         self.vel_y += GRAVITY
@@ -149,7 +144,7 @@ class Char(pygame.sprite.Sprite):
                 dx = 0
 
             # Check for collision in y direction
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.rect.width, self.rect.height + 1):
+            if tile[1].colliderect(self.rect.x, self.rect.y + dy + 1, self.rect.width, self.rect.height):
                 # Check if below the ground i.e Jumping
                 if self.vel_y < 0:
                         dy = tile[1].bottom - self.rect.top
@@ -171,7 +166,7 @@ class Char(pygame.sprite.Sprite):
         if self.alive:
             if self.idling == False and random.randint(1, 200) == 1:
                 self.idling = True
-                self.idling_counter = 100
+                self.idling_counter = 200
             
             if self.idling == False:
                 if self.direction == 1:
@@ -183,8 +178,10 @@ class Char(pygame.sprite.Sprite):
                 self.move(ai_moving_left, ai_moving_right)
                 self.update_action(1)# 1: run
                 self.move_counter += 0.5
+                # Update vision as it moves
+                self.vision.center = (self.rect.centerx + 150 * self.direction)
 
-                if self.move_counter > TILE_SIZE * 3:
+                if self.move_counter > TILE_SIZE:
                     self.direction *= -1
                     self.move_counter *= -1
             else:
@@ -235,14 +232,14 @@ collectible_group = pygame.sprite.Group()
 
 player1 = Char("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w], 1, 1 )
 player2 = Char("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP], 1, 1)
-enemy = Char("enemy", 300, 300, 0.2, 0.8, [moving_left, moving_right, jump], 0.4, 0.9)
-enemy2 = Char("enemy", 400, 300, 0.2, 0.8, [moving_left, moving_right, jump], 0.4, 0.9)
+enemy = Char("enemy", 300, 300, 0.2, 0.6, [moving_left, moving_right, jump], 0.4, 0.9)
 enemy_group.add(enemy)
-enemy_group.add(enemy2)
 
 collectible = Collectible("Trophy", 1, 120, 110)
 collectible_group.add(collectible)
 collectible = Collectible("Coin", 0.05, 733, 250)
+collectible_group.add(collectible)
+collectible = Collectible("Coin", 0.05, 450, 530)
 collectible_group.add(collectible)
 
 world = worldmap.World(world_data)
