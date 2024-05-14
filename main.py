@@ -55,8 +55,6 @@ def draw_bg():
 start_button = button.Button((WIDTH / 2) - 100, 150, start_img, 2)
 quit_button = button.Button((WIDTH / 2) - 100, 300, quit_img, 2)
 
-
-
 # Character class
 class Char(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, scale, speed, keys, scalex, scaley):
@@ -224,7 +222,7 @@ class Char(pygame.sprite.Sprite):
 
     def draw(self):
         if self.char_type == "enemy":
-            WIN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.center[0] - self.width / 2, self.rect.center[1] - self.height / 2 + 5))
+            WIN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.center[0] - self.width / 2, self.rect.center[1] - self.height / 2 -8))
         else:
             WIN.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.center[0] - self.width / 2, self.rect.center[1] - self.height / 2))
         # pygame.draw.rect(WIN, "white", self.rect, 1)
@@ -243,15 +241,11 @@ collectible_group = pygame.sprite.Group()
 
 player1 = Char("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w], 1, 1 )
 player2 = Char("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP], 1, 1)
-enemy = Char("enemy", 300, 300, 0.2, 0.6, [moving_left, moving_right, jump], 0.4, 0.9)
+enemy = Char("enemy", 300, 300, 0.2, 0.6, [moving_left, moving_right, jump], 0.3, 0.6)
 enemy_group.add(enemy)
 
-collectible = Collectible("Trophy", 0.85, 165, 110)
-collectible_group.add(collectible)
-collectible = Collectible("Coin", 0.05, 733, 250)
-collectible_group.add(collectible)
-collectible = Collectible("Coin", 0.05, 450, 530)
-collectible_group.add(collectible)
+trophy = Collectible("Trophy", 0.85, 165, 110)
+collectible_group.add(trophy)
 
 world = worldmap.World(world_data)
 
@@ -280,29 +274,37 @@ while run:
         collectible_group.draw(WIN)
         
         # Player 1
-        if player1.alive:
-            if game_over == 0:
-                player1.draw()
-                if pygame.K_a or pygame.K_d:
-                    player1.update_action(1)# 1: run
-                else:
-                    player1.update_action(2)# 2: idle
-                game_over = player1.move(False, False, game_over)
+        if game_over == 0:
+            player1.draw()
+            if player1.rect.colliderect(enemy.rect):
+                game_over = -1
+            if player1.rect.colliderect(trophy.rect):
+                game_over = -1
+            if pygame.K_a or pygame.K_d:
+                player1.update_action(1)# 1: run
+            else:
+                player1.update_action(2)# 2: idle
+            game_over = player1.move(False, False, game_over)
         # Player 2
-        if player1.alive:
-            if game_over == 0:
-                player2.draw()
-                if pygame.K_LEFT or pygame.K_RIGHT:
-                    player2.update_action(1)# 1: run
-                else:
-                    player1.update_action(2)# 2: idle
-                game_over = player2.move(False, False, game_over)
+
+        if game_over == 0:
+            player2.draw()
+            if player2.rect.colliderect(enemy.rect):
+                game_over = -1
+            if player2.rect.colliderect(trophy.rect):
+                game_over = -1
+            if pygame.K_LEFT or pygame.K_RIGHT:
+                player2.update_action(1)# 1: run
+            else:
+                player1.update_action(2)# 2: idle
+            game_over = player2.move(False, False, game_over)
         # Enemy
-        if enemy.alive:
-            for enemy in enemy_group:
-                enemy.update_animation()
-                enemy.ai()
-                enemy.draw()
+        
+        for enemy in enemy_group:
+            enemy.update_animation()
+            enemy.ai()
+            enemy.draw()
+                
             game_over = enemy.move(False, False, game_over)
 
         # Draw world
@@ -312,7 +314,7 @@ while run:
 
         # If player has died
         if game_over == -1:
-            player1.reset("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w], 1, 1 )
+            player1.reset("player1", 70, 500, 0.15, 5, [pygame.K_a, pygame.K_d, pygame.K_w], 1, 1)
             player2.reset("player2", 130, 500, 0.15, 5, [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP], 1, 1)
             game_over = 0 
 
